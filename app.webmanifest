@@ -1,0 +1,9 @@
+{
+    "short_name": "Countdown",
+    "name": "Countdown",
+    "start_url": "/countdown",
+    "scope": "/countdown",
+    "display": "standalone",
+    "background_color": "#fff",
+    "theme_color": "#fff"
+}
