@@ -26,6 +26,8 @@
     // Load up.
     const words = await load();
 
+    input.focus();
+
     // Do the things.
     if (input.value) {
         search(input.value);
