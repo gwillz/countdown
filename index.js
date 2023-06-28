@@ -56,9 +56,13 @@
         }
     }
 
-
-    async function search(letters) {
+    async function search(query) {
         output.innerText = 'Searching...';
+
+        const match = query.trim().match(/([^!\s]*)\s*!?([^\s]+)?/);
+        const [, letters, required] = match;
+
+        console.log({ letters, required });
 
         const found = [];
 
@@ -76,6 +80,7 @@
             }
 
             if (length != word.length) continue;
+            if (required && !word.includes(required)) continue;
 
             found.push(word);
             render();
