@@ -63,8 +63,6 @@
         const match = query.trim().match(/([^!\s]*)\s*!?([^\s]+)?/);
         const [, letters, required] = match;
 
-        console.log({ letters, required });
-
         const found = [];
 
         for (let word of words) {
@@ -138,7 +136,6 @@
 
         const json = await res.json();
         const { meanings } = json[0];
-        console.log(meanings);
         return meanings;
     }
 
