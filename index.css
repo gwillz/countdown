@@ -29,3 +29,12 @@ html, body {
     margin: 5px;
     padding: 5px;
 }
+
+pre {
+    white-space: pre-wrap;
+}
+
+
+.click {
+    cursor: pointer;
+}

@@ -3,6 +3,7 @@
     window.addEventListener('load', cb);
 })(async function() {
     const MIN_LENGTH = 3;
+    const MAX_RESULTS = 100;
     const TARGET = 'https://raw.githubusercontent.com/streetsidesoftware/cspell-dicts/main/dictionaries/en_GB/src/wordsEnGb.txt';
 
     let ready = false;
@@ -75,6 +76,7 @@
 
             for (let letter of word.split('')) {
                 if (!stash.includes(letter)) continue;
+
                 stash.splice(stash.indexOf(letter), 1);
                 length++;
             }
@@ -83,16 +85,81 @@
             if (required && !word.includes(required)) continue;
 
             found.push(word);
-            render();
-        }
-
-        function render() {
-            found.sort((a, b) => b.length - a.length);
-            output.innerText = found.join("\n");
         }
 
         if (!found.length) {
             output.innerText = 'No results.';
         }
+        else {
+            found.sort((a, b) => b.length - a.length);
+            found.splice(MAX_RESULTS);
+
+            const list = h('ol', {}, found.map(word => (
+                render({ word })
+            )));
+
+            output.innerHTML = '';
+            output.insertAdjacentElement('beforeend', list);
+        }
+    }
+
+    function render(props) {
+        async function lookup() {
+            if (props.results) return;
+
+            props.results = await getDictionary(props.word);
+            ref.replaceWith(render(props));
+        }
+
+        const ref = h('li', {}, [
+            h('span', { className: 'click', onclick: lookup }, [
+                `${props.word} (${props.word.length})`,
+            ]),
+            h('ol', {}, (props.results ?? []).map(result => (
+                h('li', {}, [
+                    h('em', {}, [result.partOfSpeech]),
+                    h('ol', {}, result.definitions.map(def => (
+                        h('li', {}, [
+                            def.definition,
+                        ])
+                    ))),
+                ])
+            ))),
+        ]);
+
+        return ref;
+    }
+
+    async function getDictionary(word) {
+        const res = await fetch('https://api.dictionaryapi.dev/api/v2/entries/en/' + word, {
+            mode: 'cors',
+            cache: "force-cache",
+        });
+
+        const json = await res.json();
+        const { meanings } = json[0];
+        console.log(meanings);
+        return meanings;
+    }
+
+    function h(tag, attributes, children) {
+        const element = document.createElement(tag);
+
+        for (let [key, value] of Object.entries(attributes)) {
+            element[key] = value;
+        }
+
+        for (let child of children) {
+            if (!child) continue;
+
+            if (child instanceof Node) {
+                element.insertAdjacentElement('beforeend', child);
+            }
+            else {
+                element.insertAdjacentText('beforeend', child);
+            }
+        }
+
+        return element;
     }
 });
