@@ -10,6 +10,8 @@ Now go and pretend you're smart in front of your partner while watching mindless
 
 Visit: https://gwillz.github.io/countdown
 
+Locally: `npx serve`
+
 
 ## Python version
 
