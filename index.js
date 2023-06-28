@@ -19,7 +19,7 @@
         event.preventDefault();
         if (ready) {
             search(input.value);
-            history.replaceState(null, '', location.pathname + '?letters=' + input.value);
+            history.replaceState(null, '', location.pathname + '?letters=' + encodeURIComponent(input.value));
         }
     });
 
