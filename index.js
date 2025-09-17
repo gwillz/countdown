@@ -198,6 +198,10 @@
                 if (type === 'results') {
                     resolve(data);
                 }
+                else if (type === 'stats') {
+                    console.log(data);
+                    output.innerText = data;
+                }
                 else {
                     output.innerText = `Unknown message: ${type}`;
                     resolve();

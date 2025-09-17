@@ -66,6 +66,11 @@ const EVENTS = {
         }
 
         if (extra) {
+            postMessage({
+                type: 'stats',
+                data: `Found words: ${found.length}, searching for extra words`,
+            });
+
             for (let word of found.slice()) {
                 if (word.length == query.length) continue;
                 if (query.length - word.length < 3) continue;
@@ -83,6 +88,11 @@ const EVENTS = {
                 }
             }
         }
+
+        postMessage({
+            type: 'stats',
+            data: `Found words: ${found.length}`,
+        });
 
         found.sort((a, b) => b.length - a.length || a.localeCompare(b));
 
