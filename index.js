@@ -64,6 +64,7 @@
                 const { type, data } = event.data;
 
                 if (type === 'ready') {
+                    console.log(`Loaded words: ${data}`);
                     output.innerText = 'ready.';
                     resolve();
                 }
