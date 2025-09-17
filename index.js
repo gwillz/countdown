@@ -150,24 +150,34 @@
         return meanings;
     }
 
-    function h(tag, attributes, children) {
-        const element = document.createElement(tag);
+    const h = (function() {
+        function h(tag, attributes, children) {
+            /** @type {HTMLElement} */
+            const element = document.createElement(tag);
 
-        for (let [key, value] of Object.entries(attributes)) {
-            element[key] = value;
+            for (let [key, value] of Object.entries(attributes)) {
+                element[key] = value;
+            }
+
+            for (let child of children) {
+                if (!child) continue;
+
+                if (child instanceof Node) {
+                    element.insertAdjacentElement('beforeend', child);
+                }
+                else {
+                    element.insertAdjacentText('beforeend', child);
+                }
+            }
+
+            return element;
         }
 
-        for (let child of children) {
-            if (!child) continue;
+        h.replace = function replace(oldElement, newElement) {
+            oldElement.replaceWith(newElement);
+            return newElement;
+        };
 
-            if (child instanceof Node) {
-                element.insertAdjacentElement('beforeend', child);
-            }
-            else {
-                element.insertAdjacentText('beforeend', child);
-            }
-        }
-
-        return element;
-    }
+        return h;
+    }());
 });
