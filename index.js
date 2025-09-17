@@ -1,38 +1,39 @@
 
 (function(cb) {
     window.addEventListener('load', cb);
-})(async function() {
+})(function() {
     const MIN_LENGTH = 3;
     const MAX_RESULTS = 100;
     const TARGET = 'https://raw.githubusercontent.com/streetsidesoftware/cspell-dicts/b13f8035d03d5491cd8fe618cab532e4ff58ffd2/dictionaries/en_GB-legacy/src/wordsEnGb.txt';
-
-    let ready = false;
 
     const form = document.getElementById('-js-form');
     const input = document.getElementById('-js-input');
     const output = document.getElementById('-js-output');
 
-    const params = new URLSearchParams(location.search);
-    input.value = params.get('letters');
+    (async () => {
+        const params = new URLSearchParams(location.search);
+        input.value = params.get('letters');
 
-    // Input events.
-    form.addEventListener('submit', event => {
-        event.preventDefault();
-        if (ready) {
-            search(input.value);
-            history.replaceState(null, '', location.pathname + '?letters=' + encodeURIComponent(input.value));
+        // Load up.
+        const words = await load();
+
+        input.disabled = false;
+        form.disabled = false;
+        input.focus();
+
+        // Do the things.
+        if (input.value) {
+            // await ready.lock;
+            search(words, input.value);
         }
-    });
 
-    // Load up.
-    const words = await load();
-
-    input.focus();
-
-    // Do the things.
-    if (input.value) {
-        search(input.value);
-    }
+        // Input events.
+        form.addEventListener('submit', async event => {
+            event.preventDefault();
+            search(words, input.value);
+            history.replaceState(null, '', location.pathname + '?letters=' + encodeURIComponent(input.value));
+        });
+    })();
 
     async function load() {
         try {
@@ -53,7 +54,6 @@
 
             output.innerText = 'ready.';
 
-            ready = true;
             return words;
         }
         catch (error) {
@@ -61,7 +61,7 @@
         }
     }
 
-    async function search(query) {
+    function search(words, query) {
         output.innerText = 'Searching...';
 
         const match = query.trim().match(/([^!\s]*)\s*!?([^\s]+)?/);
