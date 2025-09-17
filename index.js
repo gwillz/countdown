@@ -4,7 +4,7 @@
 })(async function() {
     const MIN_LENGTH = 3;
     const MAX_RESULTS = 100;
-    const TARGET = 'https://raw.githubusercontent.com/streetsidesoftware/cspell-dicts/main/dictionaries/en_GB/src/wordsEnGb.txt';
+    const TARGET = 'https://raw.githubusercontent.com/streetsidesoftware/cspell-dicts/b13f8035d03d5491cd8fe618cab532e4ff58ffd2/dictionaries/en_GB-legacy/src/wordsEnGb.txt';
 
     let ready = false;
 
