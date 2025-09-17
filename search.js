@@ -17,7 +17,18 @@ const EVENTS = {
                 throw new Error(`Failed to load word list: ${res.status} ${res.statusText}`);
             }
 
-            words.splice(0, 0, ...(await res.text()).split("\n"));
+            const importWords = (await res.text()).split("\n");
+
+            for (let word of importWords) {
+                word = word.trim();
+                word = word.toLowerCase();
+                if (word.length < MIN_LENGTH) continue;
+                if (!/^[a-z]+$/.test(word)) continue;
+
+                words.push(word);
+            }
+
+            words.sort();
 
             postMessage({
                 type: 'ready',
