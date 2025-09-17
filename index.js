@@ -109,13 +109,23 @@
         async function lookup() {
             if (props.results) return;
 
+            props.loading = true;
+            ref = h.replace(ref, render(props));
+
             props.results = await getDictionary(props.word);
-            ref.replaceWith(render(props));
+            props.loading = false;
+            ref = h.replace(ref, render(props));
         }
 
-        const ref = h('li', {}, [
-            h('span', { className: 'click', onclick: lookup }, [
-                `${props.word} (${props.word.length})`,
+        let ref = h('li', {}, [
+            h('span', {}, [
+                h('span', { className: 'click', onclick: lookup }, [
+                    `${props.word}`,
+                ]),
+                h('span', {}, [
+                    props.loading ? ' - ' : `(${props.word.length})`,
+                ]),
+                props.loading ? h('span', { className: 'loading' }, ['loading...']) : null,
             ]),
             h('ol', {}, (props.results ?? []).map(result => (
                 h('li', {}, [

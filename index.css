@@ -38,3 +38,11 @@ pre {
 .click {
     cursor: pointer;
 }
+
+.click:hover {
+    text-decoration: underline;
+}
+
+.loading {
+    font-style: italic;
+}
