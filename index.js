@@ -43,6 +43,10 @@
                 cache: "force-cache",
             });
 
+            if (!res.ok) {
+                throw new Error(`Failed to load word list: ${res.status} ${res.statusText}`);
+            }
+
             output.innerText = 'unpacking...';
 
             const words = (await res.text()).split("\n");
