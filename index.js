@@ -101,7 +101,8 @@
             output.innerHTML = '';
             h.insert(output, h('div', {}, [
                 h('span', {}, ['Results for: ']),
-                h('strong', {}, [`${query} (${query.length})`]),
+                h('strong', {}, [`${query}`]),
+                h('span', {}, [` (${query.replace(/\s/g, '').length})`]),
                 required && h('div', {}, [
                     h('span', {}, ['Must include: ']),
                     h('strong', {}, [required]),
@@ -137,7 +138,7 @@
                 h('span', { className: 'click', onclick: props.word.includes(' ') ? swap : lookup }, [
                     `${props.word}`,
                 ]),
-                h('span', {}, [` (${props.word.length})`]),
+                h('span', {}, [` (${props.word.replace(/\s/g, '').length})`]),
             ]),
             props.loading ? h('div', { className: 'loading' }, ['loading...']) : null,
             props.results && (
