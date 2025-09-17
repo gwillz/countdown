@@ -4,21 +4,21 @@
 })(function() {
     const params = new URLSearchParams(location.search);
 
-    const MIN_LENGTH = 3;
     const MAX_RESULTS = params.get('max') || 100;
-    const TARGET = 'https://raw.githubusercontent.com/streetsidesoftware/cspell-dicts/b13f8035d03d5491cd8fe618cab532e4ff58ffd2/dictionaries/en_GB-legacy/src/wordsEnGb.txt';
 
     const form = document.getElementById('-js-form');
     const input = document.getElementById('-js-input');
     const extra = document.getElementById('-js-extra');
     const output = document.getElementById('-js-output');
 
+    const worker = new Worker('search.js');
+
     (async () => {
         input.value = params.get('letters');
         input.checked = params.get('extra') == 'yes';
 
         // Load up.
-        const words = await load();
+        await load();
 
         input.disabled = false;
         extra.disabled = false;
@@ -27,14 +27,14 @@
 
         // Do the things.
         if (input.value) {
-            search(words, input.value);
+            search(input.value);
         }
 
         // Input events.
         form.addEventListener('submit', async event => {
             event.preventDefault();
 
-            search(words, input.value);
+            search(input.value);
 
             const params = new URLSearchParams();
             params.set('letters', input.value);
@@ -52,32 +52,30 @@
     })();
 
     async function load() {
-        try {
+        return new Promise(resolve => {
             output.innerText = 'loading...';
 
-            const res = await fetch(TARGET, {
-                mode: 'cors',
-                cache: "force-cache",
-            });
+            worker.postMessage({ type: 'load' });
+            worker.onmessage = (event) => {
+                const { type, data } = event.data;
 
-            if (!res.ok) {
-                throw new Error(`Failed to load word list: ${res.status} ${res.statusText}`);
+                if (type === 'ready') {
+                    output.innerText = 'ready.';
+                    resolve();
+                }
+                else if (type === 'error') {
+                    output.innerText = `Error: ${data}`;
+                    resolve();
+                }
+                else {
+                    output.innerText = `Unknown message: ${type}`;
+                    resolve();
+                }
             }
-
-            output.innerText = 'unpacking...';
-
-            const words = (await res.text()).split("\n");
-
-            output.innerText = 'ready.';
-
-            return words;
-        }
-        catch (error) {
-            output.innerText = error.message || error;
-        }
+        });
     }
 
-    function search(words, query) {
+    async function search(query) {
         output.innerText = 'Searching...';
 
         query = query.trim();
@@ -88,59 +86,12 @@
 
         query = letters.replace(/\s/g, '');
 
-        const found = [];
-
-        function *subSearch(query, required = '') {
-            for (let word of words) {
-                if (word.length < MIN_LENGTH) continue;
-                if (word.length > query.length) continue;
-                if (word === letters) continue;
-
-                const stash = query.split('');
-                let length = 0;
-
-                for (let letter of word.split('')) {
-                    if (!stash.includes(letter)) continue;
-
-                    stash.splice(stash.indexOf(letter), 1);
-                    length++;
-                }
-
-                if (length != word.length) continue;
-                if (required && !word.includes(required)) continue;
-
-                yield word;
-            }
-        }
-
-        for (let word of subSearch(query, required)) {
-            found.push(word);
-        }
-
-        if (extra.checked) {
-            for (let word of found.slice()) {
-                if (word.length == query.length) continue;
-                if (query.length - word.length < 3) continue;
-
-                const remaining = query.split('').filter(letter => !word.includes(letter));
-                const subQuery = remaining.join('');
-
-                for (let extra of subSearch(subQuery)) {
-                    if (word === extra) continue;
-
-                    const combo = [word, extra].sort().join(' ');
-                    if (found.includes(combo)) continue;
-
-                    found.push(combo);
-                }
-            }
-        }
+        const found = await getSearch(query, required, extra.checked);
 
         if (!found.length) {
             output.innerText = 'No results.';
         }
         else {
-            found.sort((a, b) => b.length - a.length || a.localeCompare(b));
             found.splice(MAX_RESULTS);
 
             const list = h('ol', {}, found.map(word => (
@@ -223,6 +174,27 @@
         const json = await res.json();
         const { meanings } = json[0];
         return meanings;
+    }
+
+    async function getSearch(query, required, extra) {
+        return new Promise(resolve => {
+            worker.postMessage({
+                type: 'search',
+                data: { query, required, extra },
+            });
+
+            worker.onmessage = (event) => {
+                const { type, data } = event.data;
+
+                if (type === 'results') {
+                    resolve(data);
+                }
+                else {
+                    output.innerText = `Unknown message: ${type}`;
+                    resolve();
+                }
+            }
+        });
     }
 
     const h = (function() {
