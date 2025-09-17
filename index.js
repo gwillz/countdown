@@ -122,11 +122,9 @@
                 h('span', { className: 'click', onclick: lookup }, [
                     `${props.word}`,
                 ]),
-                h('span', {}, [
-                    props.loading ? ' - ' : `(${props.word.length})`,
-                ]),
-                props.loading ? h('span', { className: 'loading' }, ['loading...']) : null,
+                h('span', {}, [` (${props.word.length})`]),
             ]),
+            props.loading ? h('div', { className: 'loading' }, ['loading...']) : null,
             props.results && (
                 props.results.length > 0 ? (
                     h('ol', {}, props.results.map(result => (
