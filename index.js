@@ -84,8 +84,6 @@
         const match = query.match(/([^!]*)\s*!?([^\s]+)?/);
         const [, letters, required] = match;
 
-        query = letters.replace(/\s/g, '');
-
         const found = await getSearch(query, required, extra.checked);
 
         if (!found.length) {
@@ -101,7 +99,7 @@
             output.innerHTML = '';
             h.insert(output, h('div', {}, [
                 h('span', {}, ['Results for: ']),
-                h('strong', {}, [`${query}`]),
+                h('strong', {}, [`${letters}`]),
                 h('span', {}, [` (${query.replace(/\s/g, '').length})`]),
                 required && h('div', {}, [
                     h('span', {}, ['Must include: ']),

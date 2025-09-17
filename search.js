@@ -33,6 +33,9 @@ const EVENTS = {
     },
 
     search({query, required, extra}) {
+        query = query.replace(/\s/g, '');
+        required = required || '';
+
         const found = [];
 
         function *subSearch(query, required = '') {
