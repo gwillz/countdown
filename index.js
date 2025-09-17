@@ -127,16 +127,22 @@
                 ]),
                 props.loading ? h('span', { className: 'loading' }, ['loading...']) : null,
             ]),
-            h('ol', {}, (props.results ?? []).map(result => (
-                h('li', {}, [
-                    h('em', {}, [result.partOfSpeech]),
-                    h('ol', {}, result.definitions.map(def => (
+            props.results && (
+                props.results.length > 0 ? (
+                    h('ol', {}, props.results.map(result => (
                         h('li', {}, [
-                            def.definition,
+                            h('em', {}, [result.partOfSpeech]),
+                            h('ol', {}, result.definitions.map(def => (
+                                h('li', {}, [
+                                    def.definition,
+                                ])
+                            ))),
                         ])
-                    ))),
-                ])
-            ))),
+                    )))
+                ) : (
+                    h('div', {}, 'No definitions found')
+                )
+            )
         ]);
 
         return ref;
@@ -149,10 +155,7 @@
         });
 
         if (!res.ok) {
-            return {
-                partOfSpeech: res.status == 404 ? 'No definitions found.' : res.statusText,
-                definitions: [],
-            };
+            return [];
         }
 
         const json = await res.json();
