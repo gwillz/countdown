@@ -88,7 +88,9 @@
         const match = query.match(/([^!]*)\s*!?([^\s]+)?/);
         const [, letters, required] = match;
 
+        console.time('search');
         const found = await getSearch(query, required, extra.checked);
+        console.timeEnd('search');
 
         if (!found.length) {
             output.innerText = 'No results.';
