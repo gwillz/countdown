@@ -30,8 +30,13 @@
         // Input events.
         form.addEventListener('submit', async event => {
             event.preventDefault();
+
             search(words, input.value);
-            history.replaceState(null, '', location.pathname + '?letters=' + encodeURIComponent(input.value));
+
+            const params = new URLSearchParams();
+            params.set('letters', input.value);
+
+            history.replaceState(null, '', location.pathname + '?' + params.toString());
         });
     })();
 
