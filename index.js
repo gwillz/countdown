@@ -101,7 +101,11 @@
             )));
 
             output.innerHTML = '';
-            output.insertAdjacentElement('beforeend', list);
+            h.insert(output, h('div', {}, [
+                h('span', {}, ['Results for: ']),
+                h('strong', {}, [`${query} (${query.length})`]),
+            ]));
+            h.insert(output, list);
         }
     }
 
