@@ -44,35 +44,12 @@ const EVENTS = {
     },
 
     search({query, required, extra}) {
-        query = query.replace(/\s/g, '');
+        query = query.replace(/\s/g, '').split('');
         required = required || '';
 
         const found = [];
 
-        function *subSearch(query, required = '') {
-            for (let word of words) {
-                if (word.length < MIN_LENGTH) continue;
-                if (word.length > query.length) continue;
-                if (word === query) continue;
-
-                const stash = query.split('');
-                let length = 0;
-
-                for (let letter of word.split('')) {
-                    if (!stash.includes(letter)) continue;
-
-                    stash.splice(stash.indexOf(letter), 1);
-                    length++;
-                }
-
-                if (length != word.length) continue;
-                if (required && !word.includes(required)) continue;
-
-                yield word;
-            }
-        }
-
-        for (let word of subSearch(query, required)) {
+        for (let word of wordSearch(words, query, required)) {
             found.push(word);
         }
 
@@ -86,10 +63,9 @@ const EVENTS = {
                 if (word.length == query.length) continue;
                 if (query.length - word.length < 3) continue;
 
-                const remaining = query.split('').filter(letter => !word.includes(letter));
-                const subQuery = remaining.join('');
+                const remaining = query.filter(letter => !word.includes(letter));
 
-                for (let extra of subSearch(subQuery)) {
+                for (let extra of wordSearch(words, remaining)) {
                     if (word === extra) continue;
 
                     const combo = [word, extra].sort().join(' ');
@@ -113,6 +89,38 @@ const EVENTS = {
         });
     }
 };
+
+
+/**
+ *
+ * @param {string[]} words
+ * @param {string[]} query
+ * @param {string} required
+ */
+function *wordSearch(words, query, required = '') {
+    for (let word of words) {
+        if (word.length < MIN_LENGTH) continue;
+        if (word.length > query.length) continue;
+        if (word === query.join('')) continue;
+
+        const letters = word.split('');
+        const stash = query.slice();
+        let length = 0;
+
+        for (let letter of letters) {
+            if (!stash.includes(letter)) continue;
+
+            stash.splice(stash.indexOf(letter), 1);
+            length++;
+        }
+
+        if (length != word.length) continue;
+        if (required && !word.includes(required)) continue;
+
+        yield word;
+    }
+}
+
 
 onmessage = (event => {
     if (typeof event !== 'object') {
