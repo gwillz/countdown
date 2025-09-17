@@ -2,8 +2,10 @@
 (function(cb) {
     window.addEventListener('load', cb);
 })(function() {
+    const params = new URLSearchParams(location.search);
+
     const MIN_LENGTH = 3;
-    const MAX_RESULTS = 100;
+    const MAX_RESULTS = params.get('max') || 100;
     const TARGET = 'https://raw.githubusercontent.com/streetsidesoftware/cspell-dicts/b13f8035d03d5491cd8fe618cab532e4ff58ffd2/dictionaries/en_GB-legacy/src/wordsEnGb.txt';
 
     const form = document.getElementById('-js-form');
@@ -12,7 +14,6 @@
     const output = document.getElementById('-js-output');
 
     (async () => {
-        const params = new URLSearchParams(location.search);
         input.value = params.get('letters');
         input.checked = params.get('extra') == 'yes';
 
@@ -41,6 +42,10 @@
 
             if (extra.checked) {
                 params.set('extra', extra.value);
+            }
+
+            if (MAX_RESULTS != 100) {
+                params.set('max', MAX_RESULTS);
             }
 
             history.replaceState(null, '', location.pathname + '?' + params.toString());
