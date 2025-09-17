@@ -170,18 +170,27 @@
             }
 
             for (let child of children) {
-                if (!child) continue;
-
-                if (child instanceof Node) {
-                    element.insertAdjacentElement('beforeend', child);
+                if (Array.isArray(child)) {
+                    for (let subchild of child) {
+                        h.insert(element, subchild);
+                    }
                 }
                 else {
-                    element.insertAdjacentText('beforeend', child);
+                    h.insert(element, child);
                 }
             }
 
             return element;
         }
+
+        h.insert = function insert(parent, node) {
+            if (node instanceof Node) {
+                parent.insertAdjacentElement('beforeend', node);
+            }
+            else if (typeof node === 'string') {
+                parent.insertAdjacentText('beforeend', node);
+            }
+        };
 
         h.replace = function replace(oldElement, newElement) {
             oldElement.replaceWith(newElement);
