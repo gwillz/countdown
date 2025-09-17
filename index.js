@@ -159,9 +159,18 @@
             ref = h.replace(ref, render(props));
         }
 
+        function swap() {
+            const words = props.word.split(' ');
+            const [first] = words.splice(0, 1);
+            words.push(first);
+
+            props.word = words.join(' ');
+            ref = h.replace(ref, render(props));
+        }
+
         let ref = h('li', {}, [
             h('span', {}, [
-                h('span', { className: 'click', onclick: lookup }, [
+                h('span', { className: 'click', onclick: props.word.includes(' ') ? swap : lookup }, [
                     `${props.word}`,
                 ]),
                 h('span', {}, [` (${props.word.length})`]),
