@@ -8,16 +8,19 @@
 
     const form = document.getElementById('-js-form');
     const input = document.getElementById('-js-input');
+    const extra = document.getElementById('-js-extra');
     const output = document.getElementById('-js-output');
 
     (async () => {
         const params = new URLSearchParams(location.search);
         input.value = params.get('letters');
+        input.checked = params.get('extra') == 'yes';
 
         // Load up.
         const words = await load();
 
         input.disabled = false;
+        extra.disabled = false;
         form.disabled = false;
         input.focus();
 
@@ -35,6 +38,10 @@
 
             const params = new URLSearchParams();
             params.set('letters', input.value);
+
+            if (extra.checked) {
+                params.set('extra', extra.value);
+            }
 
             history.replaceState(null, '', location.pathname + '?' + params.toString());
         });
@@ -74,24 +81,50 @@
 
         const found = [];
 
-        for (let word of words) {
-            if (word.length < MIN_LENGTH) continue;
-            if (word.length > letters.length) continue;
+        function *subSearch(query, required = '') {
+            for (let word of words) {
+                if (word.length < MIN_LENGTH) continue;
+                if (word.length > query.length) continue;
+                if (word === letters) continue;
 
-            const stash = letters.split('');
-            let length = 0;
+                const stash = query.split('');
+                let length = 0;
 
-            for (let letter of word.split('')) {
-                if (!stash.includes(letter)) continue;
+                for (let letter of word.split('')) {
+                    if (!stash.includes(letter)) continue;
 
-                stash.splice(stash.indexOf(letter), 1);
-                length++;
+                    stash.splice(stash.indexOf(letter), 1);
+                    length++;
+                }
+
+                if (length != word.length) continue;
+                if (required && !word.includes(required)) continue;
+
+                yield word;
             }
+        }
 
-            if (length != word.length) continue;
-            if (required && !word.includes(required)) continue;
-
+        for (let word of subSearch(letters, required)) {
             found.push(word);
+        }
+
+        if (extra.checked) {
+            for (let word of found.slice()) {
+                if (word.length == letters.length) continue;
+                if (letters.length - word.length < 3) continue;
+
+                const remaining = letters.split('').filter(letter => !word.includes(letter));
+                const query = remaining.join('');
+
+                for (let extra of subSearch(query)) {
+                    if (word === extra) continue;
+
+                    const combo = [word, extra].sort().join(' ');
+                    if (found.includes(combo)) continue;
+
+                    found.push(combo);
+                }
+            }
         }
 
         if (!found.length) {

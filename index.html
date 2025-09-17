@@ -13,16 +13,30 @@
     <div class="container">
         <h1>Countdown!</h1>
         <form id="-js-form" class="countdown" disabled>
-            <input
-                id="-js-input"
-                type="text"
-                name="letters"
-                spellcheck="false"
-                autocapitalize="off"
-                autocomplete="off"
-                disabled
-            >
-            <button type="submit">Search</button>
+            <div class="row">
+                <input
+                    id="-js-input"
+                    type="text"
+                    name="letters"
+                    spellcheck="false"
+                    autocapitalize="off"
+                    autocomplete="off"
+                    disabled
+                >
+                <button type="submit">Search</button>
+            </div>
+            <div class="row">
+                <label>
+                    <input
+                        type="checkbox"
+                        id="-js-extra"
+                        name="extra"
+                        value="yes"
+                        disabled
+                    >
+                    <span>Search extra words</span>
+                </label>
+            </div>
         </form>
         <p>
             Search for fragments using the ! syntax.
