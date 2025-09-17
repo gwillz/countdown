@@ -78,6 +78,10 @@
     async function search(query) {
         output.innerText = 'Searching...';
 
+        input.disabled = true;
+        extra.disabled = true;
+        form.disabled = true;
+
         query = query.trim();
         query = query.toLowerCase();
 
@@ -108,6 +112,10 @@
             ]));
             h.insert(output, list);
         }
+
+        input.disabled = false;
+        extra.disabled = false;
+        form.disabled = false;
     }
 
     function render(props) {
