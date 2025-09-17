@@ -80,8 +80,13 @@
     function search(words, query) {
         output.innerText = 'Searching...';
 
-        const match = query.trim().match(/([^!\s]*)\s*!?([^\s]+)?/);
+        query = query.trim();
+        query = query.toLowerCase();
+
+        const match = query.match(/([^!]*)\s*!?([^\s]+)?/);
         const [, letters, required] = match;
+
+        query = letters.replace(/\s/g, '');
 
         const found = [];
 
@@ -108,19 +113,19 @@
             }
         }
 
-        for (let word of subSearch(letters, required)) {
+        for (let word of subSearch(query, required)) {
             found.push(word);
         }
 
         if (extra.checked) {
             for (let word of found.slice()) {
-                if (word.length == letters.length) continue;
-                if (letters.length - word.length < 3) continue;
+                if (word.length == query.length) continue;
+                if (query.length - word.length < 3) continue;
 
-                const remaining = letters.split('').filter(letter => !word.includes(letter));
-                const query = remaining.join('');
+                const remaining = query.split('').filter(letter => !word.includes(letter));
+                const subQuery = remaining.join('');
 
-                for (let extra of subSearch(query)) {
+                for (let extra of subSearch(subQuery)) {
                     if (word === extra) continue;
 
                     const combo = [word, extra].sort().join(' ');
