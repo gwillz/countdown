@@ -131,7 +131,7 @@
             output.innerText = 'No results.';
         }
         else {
-            found.sort((a, b) => b.length - a.length);
+            found.sort((a, b) => b.length - a.length || a.localeCompare(b));
             found.splice(MAX_RESULTS);
 
             const list = h('ol', {}, found.map(word => (
