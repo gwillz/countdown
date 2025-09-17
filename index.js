@@ -138,6 +138,13 @@
             cache: "force-cache",
         });
 
+        if (!res.ok) {
+            return {
+                partOfSpeech: res.status == 404 ? 'No definitions found.' : res.statusText,
+                definitions: [],
+            };
+        }
+
         const json = await res.json();
         const { meanings } = json[0];
         return meanings;
