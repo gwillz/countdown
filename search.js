@@ -61,7 +61,7 @@ const EVENTS = {
 
             for (let word of found.slice()) {
                 if (word.length == query.length) continue;
-                if (query.length - word.length < 3) continue;
+                if (query.length - word.length < MIN_LENGTH) continue;
 
                 const remaining = query.filter(letter => !word.includes(letter));
 
