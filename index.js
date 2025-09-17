@@ -27,7 +27,6 @@
 
         // Do the things.
         if (input.value) {
-            // await ready.lock;
             search(words, input.value);
         }
 
