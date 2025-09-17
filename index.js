@@ -151,6 +151,10 @@
             h.insert(output, h('div', {}, [
                 h('span', {}, ['Results for: ']),
                 h('strong', {}, [`${query} (${query.length})`]),
+                required && h('div', {}, [
+                    h('span', {}, ['Must include: ']),
+                    h('strong', {}, [required]),
+                ]),
             ]));
             h.insert(output, list);
         }
