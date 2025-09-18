@@ -72,7 +72,7 @@ const EVENTS = {
 
                 const remaining = query.slice();
 
-                for (let letter of word.split('')) {
+                for (let letter of word) {
                     const index = remaining.indexOf(letter);
                     if (index === -1) continue;
                     remaining.splice(index, 1);
@@ -120,11 +120,10 @@ function *wordSearch(words, query, required = '') {
         if (word.length < MIN_LENGTH) continue;
         if (word.length > query.length) continue;
 
-        const letters = word.split('');
         const stash = query.slice();
         let length = 0;
 
-        for (let letter of letters) {
+        for (let letter of word) {
             const index = stash.indexOf(letter);
             if (index === -1) continue;
 
