@@ -116,9 +116,10 @@ function *wordSearch(words, query, required = '') {
         let length = 0;
 
         for (let letter of letters) {
-            if (!stash.includes(letter)) continue;
+            const index = stash.indexOf(letter);
+            if (index === -1) continue;
 
-            stash.splice(stash.indexOf(letter), 1);
+            stash.splice(index, 1);
             length++;
         }
 
