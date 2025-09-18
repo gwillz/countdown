@@ -49,6 +49,7 @@ const EVENTS = {
         required = required || '';
 
         const found = [];
+        const seen = new Set();
 
         for (let word of wordSearch(words, query, required)) {
             if (word === original) {
@@ -56,6 +57,7 @@ const EVENTS = {
             }
 
             found.push(word);
+            seen.add(word);
         }
 
         if (extra) {
@@ -80,13 +82,14 @@ const EVENTS = {
                     if (word === extra) continue;
 
                     const combo = [word, extra].sort().join(' ');
-                    if (found.includes(combo)) continue;
+                    if (seen.has(combo)) continue;
 
                     if (combo === original) {
                         continue;
                     }
 
                     found.push(combo);
+                    seen.add(combo);
                 }
             }
         }
