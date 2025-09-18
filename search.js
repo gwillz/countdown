@@ -68,7 +68,13 @@ const EVENTS = {
                 if (word.length == query.length) continue;
                 if (query.length - word.length < MIN_LENGTH) continue;
 
-                const remaining = query.filter(letter => !word.includes(letter));
+                const remaining = query.slice();
+
+                for (let letter of word.split('')) {
+                    const index = remaining.indexOf(letter);
+                    if (index === -1) continue;
+                    remaining.splice(index, 1);
+                }
 
                 for (let extra of wordSearch(words, remaining)) {
                     if (word === extra) continue;
