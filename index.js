@@ -12,10 +12,15 @@
     const output = document.getElementById('-js-output');
 
     const worker = new Worker('search.js');
+
     worker.onerror = error => {
         output.innerText = `Error: ${error.message}`;
         console.error(error);
     }
+
+    window.onbeforeunload = () => {
+        worker.terminate();
+    };
 
     (async () => {
         input.value = params.get('letters');
