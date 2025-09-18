@@ -44,12 +44,17 @@ const EVENTS = {
     },
 
     search({query, required, extra}) {
+        const original = query.slice();
         query = query.replace(/\s/g, '').split('');
         required = required || '';
 
         const found = [];
 
         for (let word of wordSearch(words, query, required)) {
+            if (word === original) {
+                continue;
+            }
+
             found.push(word);
         }
 
@@ -70,6 +75,10 @@ const EVENTS = {
 
                     const combo = [word, extra].sort().join(' ');
                     if (found.includes(combo)) continue;
+
+                    if (combo === original) {
+                        continue;
+                    }
 
                     found.push(combo);
                 }
@@ -101,7 +110,6 @@ function *wordSearch(words, query, required = '') {
     for (let word of words) {
         if (word.length < MIN_LENGTH) continue;
         if (word.length > query.length) continue;
-        if (word === query.join('')) continue;
 
         const letters = word.split('');
         const stash = query.slice();
